@@ -226,8 +226,8 @@ def execute_w512_training():
         rows = []
         time_taken = []
         energy_consumption = []
-        previous_temp = []
-        previous_humi = []
+        future_temp = []
+        future_humi = []
         
         curr_timestamp = final_data["timestamp"].iloc[i]
         curr_energy = final_data["energy_consumption"].iloc[i]
@@ -246,8 +246,8 @@ def execute_w512_training():
             rows.append(i + 1)
             time_taken.append(timetaken)
             energy_consumption.append(final_data["energy_consumption"].iloc[i + 1] - curr_energy)
-            previous_temp.append(final_data["temperature"].iloc[i + 1])
-            previous_humi.append(final_data["humidity"].iloc[i + 1])
+            future_temp.append(final_data["temperature"].iloc[i + 1])
+            future_humi.append(final_data["humidity"].iloc[i + 1])
             
             i += 1
             
@@ -256,8 +256,8 @@ def execute_w512_training():
                 'rows': [rows],
                 'time_taken': [time_taken],
                 'energy_consumption': [energy_consumption],
-                'previous_temp': [previous_temp],
-                'previous_humi': [previous_humi],
+                'future_temp': [future_temp],
+                'future_humi': [future_humi],
                 'current_temp': [curr_temperature],
                 'current_humi': [curr_humidity],
             })
@@ -292,8 +292,8 @@ def execute_w512_training():
     def getArrayData(row_index, array_index):
         time_taken = aircon_status_result["time_taken"].iloc[row_index]
         energy_consumption = aircon_status_result["energy_consumption"].iloc[row_index]
-        temperature = aircon_status_result["previous_temp"].iloc[row_index]
-        humidity = aircon_status_result["previous_humi"].iloc[row_index]
+        temperature = aircon_status_result["future_temp"].iloc[row_index]
+        humidity = aircon_status_result["future_humi"].iloc[row_index]
         
         return [temperature[array_index], humidity[array_index], time_taken[array_index], energy_consumption[array_index]]
 
@@ -324,7 +324,7 @@ def execute_w512_training():
             for i in range(len(aircon_status_result['rows'].iloc[current_row_index])):
                 array_data = getArrayData(current_row_index, i)
         
-                #the moment it finds a temperature in the "previous temp array" that is in the acceptance from the target it will be recorded down
+                #the moment it finds a temperature in the "future temp array" that is in the acceptance from the target it will be recorded down
                 if (abs(array_data[0] - target_temp) < acceptable_range):
                     # print("target found")
                     # Target Found
