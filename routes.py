@@ -2,7 +2,9 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from concurrent.futures import ThreadPoolExecutor
 from training.w512 import execute_w512_training
 from get_result.get_w512 import get_w512
-from getBestSettiings.w512_getBestSettings import execute_w512_getBestSettings
+import uvicorn
+from getBestSettings.w512_getBestSettings import execute_w512_getBestSettings
+from mongodb_data import fetch_data
 
 app = FastAPI()
 
@@ -10,18 +12,26 @@ app = FastAPI()
 executor = ThreadPoolExecutor()
 
 # A wrapper function to run the training process
-def execute_training_sync(site: str):
+def execute_training(site: str):
     if site.lower() == 'w512':
+        try:
+            fetch_data() #fetch data to update to latest data
+            print("fetched data")
+
+        except:
+            print("failed to fetch data")
+
+        
         result = execute_w512_training()
         print("Training completed")
     else:
         result = "Site not found"
     return result
 
-@app.post("/{site}/train")
+@app.get("/{site}/train")
 async def run_training_script(site: str, background_tasks: BackgroundTasks):
     # Add the task to the background
-    background_tasks.add_task(execute_training_sync, site)
+    background_tasks.add_task(execute_training, site)
     
     # Respond immediately to the client
     return {"message": "Training has started"}

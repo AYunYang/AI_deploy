@@ -11,11 +11,11 @@ sys.setrecursionlimit(10000)  # Increase recursion limit
 def execute_w512_training():
     start_time = clock.time()
 
-    Sensors_Data = pd.read_json('temporary_data/W512_readings.json')
-    Aircon_Data = pd.read_json('temporary_data/W512_aircon_status.json')
-    Weather_Data = pd.read_json('temporary_data/Weather_data.json')
+    Sensors_Data = pd.read_json('database_data/W512_readings.json')
+    Aircon_Data = pd.read_json('database_data/W512_aircon_status.json')
+    Weather_Data = pd.read_json('database_data/Weather_data.json')
 
-    Aircon_Data = Aircon_Data.iloc[3194:]
+    # Aircon_Data = Aircon_Data.iloc[3194:]
     # Normalize the data
     Aircon_rows = []
 
@@ -29,15 +29,15 @@ def execute_w512_training():
         }
         
         fc_readings = row['FC_FullStatus_Readings']
-        
-        for unit, data in fc_readings.items():
-            if any(data.get("Set_Point", None) == 404.0 or data.get("Set_Point", None) < 0 for data in fc_readings.values()):
-                continue
-            flattened_row[f"{unit}_Status"] = data.get("Status", None)
-            flattened_row[f"{unit}_Fan_Status"] = data.get("Fan_Status", None)
-            flattened_row[f"{unit}_Set_Point"] = data.get("Set_Point", None)
-            flattened_row[f"{unit}_Operation_Mode"] = data.get("Operation_Mode", None)
-        
+        if fc_readings is not None and isinstance(fc_readings, dict):
+            for unit, data in fc_readings.items():
+                if any(data.get("Set_Point", None) == 404.0 or data.get("Set_Point", None) < 0 for data in fc_readings.values()):
+                    continue
+                flattened_row[f"{unit}_Status"] = data.get("Status", None)
+                flattened_row[f"{unit}_Fan_Status"] = data.get("Fan_Status", None)
+                flattened_row[f"{unit}_Set_Point"] = data.get("Set_Point", None)
+                flattened_row[f"{unit}_Operation_Mode"] = data.get("Operation_Mode", None)
+            
         Aircon_rows.append(flattened_row)
 
     Sensors_rows = []
@@ -72,17 +72,18 @@ def execute_w512_training():
         invalid_input_power = False
         invalid_input_energy = False
         
-        for unit, data in energy_readings.items():
-            if unit not in include_keys_2:
-                continue
-            power = data.get('Power', None)
-            energy = data.get('Energy', None)
-            if power is None:
-                invalid_input_power = True
-            if energy is None:
-                invalid_input_energy = True
-            total_power += power
-            total_energy += energy
+        if energy_readings is not None and isinstance(energy_readings, dict):
+            for unit, data in energy_readings.items():
+                if unit not in include_keys_2:
+                    continue
+                power = data.get('Power', None)
+                energy = data.get('Energy', None)
+                if power is None:
+                    invalid_input_power = True
+                if energy is None:
+                    invalid_input_energy = True
+                total_power += power
+                total_energy += energy
             
         if invalid_input_power:
             total_power = None
@@ -238,7 +239,7 @@ def execute_w512_training():
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy
 
-            if timetaken > 3600: #if each setting is more than 1 hour it will break
+            if timetaken < 15 or timetaken > 3600:
                 break
             if energyconsum < 0:
                 break 
@@ -279,9 +280,40 @@ def execute_w512_training():
     target_temp_range = np.arange(20, 29.5, 0.5)
     time_factor = 0.5
     energy_factor = 0.5
-    acceptable_range = 0.8
+    acceptable_range = 0.5
     total_rows = aircon_status_result.shape[0]
     stored_dictionary = {}
+
+
+    ########### norm data
+    highest_timetaken = 0
+    highest_energy = 0
+    lowest_timetaken = float('inf')
+    lowest_energy = float('inf')
+
+    def normalize_time(current_value):
+        return (current_value - lowest_timetaken)/(highest_timetaken - lowest_timetaken)
+        
+    def normalize_energy(current_value):
+        return (current_value - lowest_energy)/(highest_energy - lowest_energy)
+        
+    for index, row in aircon_status_result.iterrows():
+        if not row["time_taken"] or not row["energy_consumption"]:
+            continue
+        
+        if max(row["time_taken"]) > highest_timetaken:
+            highest_timetaken = max(row["time_taken"])
+            
+        if min(row["time_taken"]) < lowest_timetaken:
+            lowest_timetaken = min(row["time_taken"])
+            
+        if max(row["energy_consumption"]) > highest_energy:
+            highest_energy = max(row["energy_consumption"])
+
+        if min(row["energy_consumption"]) < lowest_energy:
+            lowest_energy = min(row["energy_consumption"])
+
+    ##########
 
     def getRowData(row_index):
         temperature = aircon_status_result["current_temp"].iloc[row_index]
@@ -332,7 +364,7 @@ def execute_w512_training():
                     curr_path = {
                         'energy_consumption': [array_data[3]],
                         'time_taken': [array_data[2]],
-                        'factor': array_data[3] * energy_factor + array_data[2] * time_factor,
+                        'factor': normalize_energy(array_data[3]) * energy_factor + normalize_time(array_data[2]) * time_factor,
                         'starting_temp': curr_temperature,
                         'starting_humi': curr_humidity,
                         'ending_temp': array_data[0],
@@ -364,7 +396,7 @@ def execute_w512_training():
                                 'ending_humi': path['ending_humi'],
                                 'path': [current_row_index] + path['path'] 
                             }
-                            curr_path['factor'] = sum(curr_path['energy_consumption']) * energy_factor + sum(curr_path['time_taken']) * time_factor
+                            curr_path['factor'] = normalize_energy(sum(curr_path['energy_consumption'])) * energy_factor + normalize_time(sum(curr_path['time_taken'])) * time_factor
                             if current_row_index in paths:
                                 if comparePath(paths[current_row_index], curr_path):
                                     paths[current_row_index] = curr_path
@@ -403,7 +435,7 @@ def execute_w512_training():
                             'ending_humi': path['ending_humi'],
                             'path': [i] + path['path'] 
                         }
-                        curr_path['factor'] = sum(curr_path['energy_consumption']) * energy_factor + sum(curr_path['time_taken']) * time_factor
+                        curr_path['factor'] = normalize_energy(sum(curr_path['energy_consumption'])) * energy_factor + normalize_time(sum(curr_path['time_taken'])) * time_factor
                         if i in paths:
                             if comparePath(paths[i], curr_path):
                                 paths[i] = curr_path
