@@ -235,13 +235,13 @@ def execute_w512_training():
         curr_temperature = final_data["temperature"].iloc[i]
         curr_humidity = final_data["humidity"].iloc[i]
        
-        while i < total_final_rows and is_same_settings(final_data, i + 1, i):
+        while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i):
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy
 
             if timetaken < 15 or timetaken > 3600:
                 break
-            if energyconsum < 0:
+            if energyconsum <= 0:
                 break 
 
             rows.append(i + 1)
@@ -283,6 +283,8 @@ def execute_w512_training():
     acceptable_range = 0.5
     total_rows = aircon_status_result.shape[0]
     stored_dictionary = {}
+
+    print(f"acceptable_range: {acceptable_range}")
 
 
     ########### norm data
