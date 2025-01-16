@@ -5,7 +5,7 @@ import os
 
 # Replace with your MongoDB connection string
 pem_key = "pem_key/BMS_server.pem"
-connection_string = "mongodb://User:securepassword@54.179.159.188:27017/?authSource=database_1"
+connection_string = "mongodb://User:securepassword@13.213.6.26:27017/?authSource=database_1"
 def debug_log(message):
     print(f"[DEBUG] {message}")
 
