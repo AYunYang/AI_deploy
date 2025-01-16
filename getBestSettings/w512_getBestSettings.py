@@ -255,7 +255,7 @@ def execute_w512_getBestSettings(temp):
 
             if timetaken < 15 or timetaken > 3600:
                 break
-            if energyconsum < 0:
+            if energyconsum <= 0:
                 break
 
             rows.append(i + 1)
@@ -294,6 +294,11 @@ def execute_w512_getBestSettings(temp):
     # aircon_status_result.to_csv('aircon_status_W512_getbestsett.csv', index=False)
     # aircon_status_result.info()
 
+    No_of_aircon = len([
+        col for col in aircon_status_result.columns
+        if "FC_Unit_" in col and "_Status" in col and "Fan" not in col
+    ])
+
            
     def getClosestTempToMaintain(maintain_temp):
         closest_temp_index = None
@@ -321,6 +326,8 @@ def execute_w512_getBestSettings(temp):
         #     print(f"Maintain temperature {maintain_temp} is out of range.")
         #     return None
 
+        print(No_of_aircon)
+
         #if the provided temp is in range, it needs to check whether its value exist, else it will take the closest temperature
         if maintain_temp in aircon_status_result["current_temp"].values:
             closest_temp = maintain_temp
@@ -334,10 +341,28 @@ def execute_w512_getBestSettings(temp):
             by=[ "energy_efficiency", "total_energy_consumption","total_time_maintained"], ascending=[False,False, True]
         ).iloc[0]
 
+        formatted_results = [{
+            "results": [
+                {
+                    "time_taken_seconds": None,  # or calculate if necessary
+                    "aircon_settings": [
+                        {
+                            "unit": idx + 1,
+                            "status": best_entries[f"FC_Unit_{idx+1}_Status"],
+                            "fan_status": best_entries[f"FC_Unit_{idx+1}_Fan_Status"],
+                            "set_point": best_entries[f"FC_Unit_{idx+1}_Set_Point"],
+                            "operation_mode": best_entries[f"FC_Unit_{idx+1}_Operation_Mode"]
+                        }
+                        for idx in range(No_of_aircon)  # Adjust range according to the number of units
+                    ]
+                }
+            ]
+        }]
 
-        return best_entries
+
+        return formatted_results
     
-    result =  get_best_settings(temp).to_dict()
+    result =  get_best_settings(temp)
     return result
 
 
