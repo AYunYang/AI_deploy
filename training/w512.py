@@ -211,11 +211,18 @@ def execute_w512_training():
                 return not check_for_off
             
         return check_for_off
+    
+    def is_within_temperature_range(current_temp, next_temp):
+        range_factor = 0.5
+        if current_temp - range_factor <= next_temp <= current_temp + range_factor:
+            return True
+        return False
 
     # final_data.to_csv('final_data_W512_2.csv', index=False)
 
 
     aircon_status_result = pd.DataFrame()
+    aircon_status_getBestSettings_result = pd.DataFrame()
     total_final_rows = final_data.shape[0]
     Aircon_Normalize_Data = Aircon_Normalize_Data.drop(['date', 'time', 'datetime_str', 'datetime', 'timestamp'], axis=1)
 
@@ -268,12 +275,72 @@ def execute_w512_training():
             
         aircon_status_result = pd.concat([aircon_status_result, temp_df], ignore_index=False)
             
-    print("Finished")
+    print("Finished 1")
+
+    for i in range(total_final_rows - 1):
+        if is_all_off(final_data, i, True):
+            continue
+        
+        rows = []
+        # time_taken = []
+        # energy_consumption = []
+        # previous_temp = []
+        # previous_humi = []
+        
+        curr_timestamp = final_data["timestamp"].iloc[i]
+        curr_energy = final_data["energy_consumption"].iloc[i]
+        curr_temperature = final_data["temperature"].iloc[i]
+        curr_humidity = final_data["humidity"].iloc[i]
+
+        total_time_maintained = 0
+        total_energy_consumption = 0
+
+        
+        while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i) and is_within_temperature_range(curr_temperature,final_data["temperature"].iloc[i + 1]):
+            timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
+            energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
+
+            if timetaken < 15 or timetaken > 3600:
+                break
+            if energyconsum <= 0:
+                break
+
+            rows.append(i + 1)
+
+            total_time_maintained += timetaken
+            total_energy_consumption += energyconsum
+            
+            i += 1
+
+            
+
+        if total_time_maintained == 0 or total_energy_consumption == 0:
+            continue
+            
+        temp_df = pd.DataFrame({
+                'current_temp': [curr_temperature],
+                'current_humi': [curr_humidity],
+                'total_time_maintained':total_time_maintained,
+                'total_energy_consumption': total_energy_consumption,
+                'energy_efficiency': total_time_maintained / total_energy_consumption
+            })
+        for col in Aircon_Normalize_Data.columns:
+            temp_df[col] = final_data[col].iloc[i]
+        
+            
+        aircon_status_getBestSettings_result = pd.concat([aircon_status_getBestSettings_result, temp_df], ignore_index=False)
+    
+    print("Finished 2")
+            
+
 
     
     aircon_status_result = aircon_status_result.sort_values(by=['current_temp'], ascending=False) 
-    aircon_status_result.to_csv('saved_data/aircon_status_W512_2.csv', index=False)
+    aircon_status_result.to_csv('saved_data/aircon_status_W512.csv', index=False)
     # aircon_status_result.info()
+    aircon_status_getBestSettings_result = aircon_status_getBestSettings_result.sort_values(by=['current_temp'], ascending=False)
+    aircon_status_getBestSettings_result.to_csv("saved_data/aircon_status_W512_getBestSettings.csv", index=False)
+        	
 
 
     ##################################################################################################################

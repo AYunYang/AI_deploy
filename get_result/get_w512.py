@@ -12,7 +12,7 @@ def get_w512(current_temp, target_temp):
         stored_dictionary = json.load(f) 
 
     print(type(stored_dictionary))
-    aircon_status_result = pd.read_csv("saved_data/aircon_status_W512_2.csv")
+    aircon_status_result = pd.read_csv("saved_data/aircon_status_W512.csv")
 
     # unique_keys = [key for key in stored_dictionary.keys() if key.startswith("Dictionary for target temp")]
     # print(unique_keys)
