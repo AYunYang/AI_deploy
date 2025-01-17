@@ -70,6 +70,7 @@ def get_w512(current_temp, target_temp):
             key: value for key, value in stored_dict_key.items()
             if isinstance(value, dict) and 'starting_temp' in value
             and abs(value['starting_temp'] - current_temp) < acceptable_range
+            and value["path"]
         }
         aircon_settings_result = []
 
