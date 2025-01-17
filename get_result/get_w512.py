@@ -3,10 +3,9 @@ import pandas as pd
 import numpy as np
 
 def get_w512(current_temp, target_temp):
-
-    acceptable_range = 0.8 # hardcoded acceptance range
+    acceptable_range = 0.5
     key_to_find = f"Dictionary for target temp: {target_temp}"
-
+    # temperature = np.arange(0,1.1,0.1)
 
     with open('saved_data/stored_dictionary.json', 'r') as f:
         stored_dictionary = json.load(f) 
@@ -17,6 +16,11 @@ def get_w512(current_temp, target_temp):
     # unique_keys = [key for key in stored_dictionary.keys() if key.startswith("Dictionary for target temp")]
     # print(unique_keys)
 
+    # fan_status_columns = [col for col in aircon_status_result.columns if 'Fan_Status' in col]
+    # unique_statuses = set()
+    # for col in fan_status_columns:
+    #     unique_statuses.update(aircon_status_result[col].dropna().unique())
+    # fan_status_filitered = {status for status in unique_statuses if status != 'OFF'}
        
     aircon_units = len([
         col for col in aircon_status_result.columns
@@ -44,7 +48,53 @@ def get_w512(current_temp, target_temp):
             }
             unit_data.append(unit_info)
         return unit_data
+     
+    # def expandpath_withrandomness(row_index):
+    #     unit_data = []
+    #     randomness = np.round(np.random.choice(temperature, 1)[0], 1)  
+    #     scaled_change = randomness * 0.5
+
+    #     print(f"randomness: {randomness}, scaled_change: {scaled_change}")
+
+    #     if randomness <= 0.3:
+    #         unit_data = expandPath(row_index)
+    #         print()
+
+    #     elif 0.3 < randomness <= 0.6:
+    #         unit_to_change = np.random.randint(1, aircon_units + 1)
+    #         print(f"Unit to change: {unit_to_change}")
             
+    #         current_set_point = aircon_status_result[f"FC_Unit_{unit_to_change}_Set_Point"].iloc[row_index]
+    #         new_set_point = current_set_point + np.random.choice([-1, 1]) * scaled_change
+    #         print(f"{current_set_point} changed to {new_set_point}")
+            
+    #         unit_data = expandPath(row_index) 
+    #         unit_data[unit_to_change - 1]["set_point"] = new_set_point
+    #         print()
+    #     else:
+    #         unit_to_change = np.random.randint(1, aircon_units + 1)
+    #         print(f"Unit to change: {unit_to_change}")
+
+    #         current_fan_status = aircon_status_result[f"FC_Unit_{unit_to_change}_Fan_Status"].iloc[row_index]
+    #         current_set_point = aircon_status_result[f"FC_Unit_{unit_to_change}_Set_Point"].iloc[row_index]
+    #         new_set_point = current_set_point + np.random.choice([-1, 1]) * scaled_change
+    #         print(f"{current_set_point} changed to {new_set_point}")
+
+                    
+    #         fan_mode_to_change = np.random.choice(list(fan_status_filitered))
+
+    #         while current_fan_status == fan_mode_to_change:
+    #             fan_mode_to_change = np.random.choice(list(fan_status_filitered))
+    #             print("was same")
+
+    #         print(f"{current_fan_status} changed to {fan_mode_to_change}")
+            
+    #         unit_data = expandPath(row_index)  # Get the base unit data
+    #         unit_data[unit_to_change - 1]["set_point"] = new_set_point  # Update the set point
+    #         unit_data[unit_to_change - 1]["fan_status"] = fan_mode_to_change  # Update the fan mode
+    #         print()
+    #     return unit_data   
+        
     def findClosestTemperature(current_temp, paths):
         """Find the index of the closest available temperature in the paths dictionary."""
         closest_temp_index = None
