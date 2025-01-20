@@ -42,7 +42,7 @@ def execute_backtracking():
 
     Sensors_rows = []
     include_keys_1 = ["24E124725E285123", "24E124725E331695","24E124725E331744",
-                        "24E124725E332483","24E124725E290348","24E124725E331733","24E124725E286745"]#"24E124136D316361" is suppiosed to be outdoor but it is not outdoor yet
+                        "24E124725E332483","24E124725E290348","24E124725E331733","24E124725E286745","24E124725E332564"]#"24E124136D316361" is suppiosed to be outdoor but it is not outdoor yet
     include_keys_2 = ["Sensor_1","Sensor_3","Sensor_6"]
     for _, row in Sensors_Data.iterrows():
         
