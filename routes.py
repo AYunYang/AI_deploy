@@ -5,7 +5,9 @@ from get_result.get_w512 import get_w512
 import uvicorn
 from getBestSettings.w512_getBestSettings import execute_w512_getBestSettings
 from mongodb_data import fetch_data
-
+from testing_other_algorithm.GBFS import execute_GBFS
+from testing_other_algorithm.Astar import execute_Astar
+from testing_other_algorithm.backtracking import execute_backtracking
 app = FastAPI()
 
 # Create a ThreadPoolExecutor for running background tasks
@@ -21,8 +23,9 @@ def execute_training(site: str):
         except:
             print("failed to fetch data")
 
-        
-        result = execute_w512_training()
+        result = execute_GBFS()
+        # result = execute_Astar()
+        # result = execute_backtracking()
         print("Training completed")
     else:
         result = "Site not found"
