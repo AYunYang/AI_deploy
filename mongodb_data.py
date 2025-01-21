@@ -4,7 +4,6 @@ from bson import json_util
 import os
 
 # Replace with your MongoDB connection string
-pem_key = "pem_key/BMS_server.pem"
 connection_string = "mongodb://User:securepassword@13.213.6.26:27017/?authSource=database_1"
 def debug_log(message):
     print(f"[DEBUG] {message}")
@@ -19,9 +18,12 @@ def fetch_data():
         # Access the databases and collections
         debug_log("Accessing databases and collections.")
         w512_db = client['database_1']
-        aircon_status_collection = w512_db['w512_aircon_status']
-        readings_collection = w512_db['w512_readings']
+        aircon_status_collection_1 = w512_db['w512_aircon_status']
+        readings_collection_1 = w512_db['w512_readings']
         weather_data_collection = w512_db['weather_data']
+
+        aircon_status_collection_2 = w512_db['spgg_aircon_status']
+        readings_collection_2 = w512_db['spgg_readings']
 
         
         def fetch_all_as_json(collection, collection_name):
@@ -55,10 +57,12 @@ def fetch_data():
                 return None
             
         # Fetch data and check for issues
-        aircon_status_json = fetch_all_as_json(aircon_status_collection, "w512_aircon_status")
-        readings_json = fetch_all_as_json(readings_collection, "w512_readings")
+        aircon_status_json_1 = fetch_all_as_json(aircon_status_collection_1, "w512_aircon_status")
+        readings_json_1 = fetch_all_as_json(readings_collection_1, "w512_readings")
         weather_data_json = fetch_all_as_json(weather_data_collection, "weather_data")
         
+        aircon_status_json_2 = fetch_all_as_json(aircon_status_collection_2, "spgg_aircon_status")
+        readings_json_2 = fetch_all_as_json(readings_collection_2, "spgg_readings")
         # Ensure output directory exists
         output_dir = "database_data"
         os.makedirs(output_dir, exist_ok=True)
@@ -72,20 +76,23 @@ def fetch_data():
                 debug_log(f"Successfully saved data to {file_path}")
             except Exception as e:
                 debug_log(f"Error saving file {file_path}: {e}")
-        
-        if aircon_status_json:
-            save_to_file(aircon_status_json, os.path.join(output_dir, "W512_aircon_status.json"))
-        if readings_json:
-            save_to_file(readings_json, os.path.join(output_dir, "W512_readings.json"))
+        # W512 site
+        if aircon_status_json_1:
+            save_to_file(aircon_status_json_1, os.path.join(output_dir, "W512_aircon_status.json"))
+        if readings_json_1:
+            save_to_file(readings_json_1, os.path.join(output_dir, "W512_readings.json"))
+        # Weather data
         if weather_data_json:
             save_to_file(weather_data_json, os.path.join(output_dir, "Weather_data.json"))
         
-        # # Print JSON to console for debugging (optional)
-        # debug_log("Debugging: Printing fetched JSON data to the console.")
-        # print("\nAircon Status (JSON):", aircon_status_json)
-        # print("\nW512 Readings (JSON):", readings_json)
-        # print("\nWeather Data (JSON):", weather_data_json)
-        
+        # SPGG
+        if aircon_status_json_2:
+            save_to_file(aircon_status_json_2, os.path.join(output_dir, "SPGG_aircon_status.json"))
+        if readings_json_2:
+            save_to_file(readings_json_2, os.path.join(output_dir, "SPGG_readings.json"))
+
+
+
         # Close the MongoDB connection
         debug_log("Closing MongoDB connection.")
         client.close()

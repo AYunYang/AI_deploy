@@ -357,11 +357,6 @@ def execute_GBFS():
 
     # h_score is the average amount of energy and time is needed for 1 degree celius
 
-
-
-    # def calculateScore(array_data):
-    #     return (array_data[3] * energy_factor) + (array_data[2] * time_factor)
-
     def calculateHeuristicScore(start_temp, end_temp):
         return abs(end_temp - start_temp) * h_score
 
@@ -392,9 +387,20 @@ def execute_GBFS():
             while not targetReached:
                 lowestScore = float("inf")
                 lowestScoreIndex = [-1, -1]
+                in_range = False
                 for i in range(row + 1, total_rows):
                     tempRowData = getRowData(i)
                     if abs(tempRowData[0] - arrayData[0]) > acceptable_range:
+                        if in_range:
+                            continue
+
+                    in_range = True
+                    if i in paths:
+                        if paths[i]["energy_consumption"]:
+                            score = paths[i]["factor"]
+                            if score < lowestScore:
+                                lowestScore = score
+                                lowestScoreIndex = [i, 1]
                         continue
                     for j in range(len(aircon_status_result["rows"].iloc[i])):
                         if checkedNodes[i][j]:
