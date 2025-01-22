@@ -2,17 +2,26 @@ import json
 import pandas as pd
 import numpy as np
 
-def get_w512(current_temp, target_temp):
+def get_w512(current_temp, target_temp, algorithm):
+    if algorithm.lower() == 'astar':
+        with open('saved_data/stored_dictionary_Astar.json', 'r') as f:
+            stored_dictionary = json.load(f)
+        aircon_status_result = pd.read_csv("saved_data/aircon_status_W512_AStar.csv")
+
+    elif algorithm.lower() == 'gbfs':
+        with open('saved_data/stored_dictionary_GBFS.json', 'r') as f:
+            stored_dictionary = json.load(f) 
+        aircon_status_result = pd.read_csv("saved_data/aircon_status_W512_GBFS.csv")
+
+    elif algorithm.lower() == 'backtracking':
+        with open('saved_data/stored_dictionary_backtracking.json', 'r') as f:
+            stored_dictionary = json.load(f) 
+        aircon_status_result = pd.read_csv("saved_data/aircon_status_W512_backtracking.csv")
+    else:
+        return "algorithm not found"
+
     acceptable_range = 0.7
     key_to_find = f"Dictionary for target temp: {target_temp}"
-    # temperature = np.arange(0,1.1,0.1)
-
-    #To Test, just change the CSV and Json Files
-    with open('saved_data/stored_dictionary_GBFS.json', 'r') as f:
-        stored_dictionary = json.load(f) 
-
-    print(type(stored_dictionary))
-    aircon_status_result = pd.read_csv("saved_data/aircon_status_W512_GBFS.csv")
 
     # unique_keys = [key for key in stored_dictionary.keys() if key.startswith("Dictionary for target temp")]
     # print(unique_keys)
