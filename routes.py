@@ -33,7 +33,20 @@ def execute_training(site: str , algorithm: str):
         elif algorithm.lower() == 'backtracking':
             result = execute_backtracking()
             print("backtracking Training completed")
-        
+
+        elif algorithm.lower() == 'all':
+
+            execute_backtracking()
+            print("backtracking Training completed")
+
+            execute_Astar()
+            print("Astar Training completed")
+
+            execute_GBFS()
+            print("GBFS Training completed")
+
+            result = "ALL TRAINED"
+            
         else:
             result = f"{algorithm} algorithm does not exist in {site}"
 

@@ -2,9 +2,19 @@ from pymongo import MongoClient
 import json
 from bson import json_util
 import os
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Access the variables
+mongo_ip = os.getenv("MONGO_IP")
+databasename = os.getenv("DATABASE_NAME")
+
 
 # Replace with your MongoDB connection string
-connection_string = "mongodb://User:securepassword@13.213.6.26:27017/?authSource=database_1"
+connection_string = f"mongodb://User:securepassword@{mongo_ip}/?authSource={databasename}"
 def debug_log(message):
     print(f"[DEBUG] {message}")
 

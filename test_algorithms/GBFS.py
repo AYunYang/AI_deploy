@@ -248,7 +248,7 @@ def execute_GBFS():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i):
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp 
             energyConsumption = final_data["energy_consumption"].iloc[i + 1] - curr_energy
-            if timetaken < 300 or timetaken > 3600:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyConsumption <= 0:
                 break
@@ -300,7 +300,7 @@ def execute_GBFS():
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
 
-            if timetaken < 300 or timetaken > 3600:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyconsum <= 0:
                 break
@@ -342,7 +342,7 @@ def execute_GBFS():
     target_temp_range = np.arange(20, 29.5, 0.5)
     time_factor = 0.5
     energy_factor = 0.5
-    acceptable_range = 0.7
+    acceptable_range = 0.5
     total_rows = aircon_status_result.shape[0]
     stored_dictionary = {}
 

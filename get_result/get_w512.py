@@ -20,7 +20,7 @@ def get_w512(current_temp, target_temp, algorithm):
     else:
         return "algorithm not found"
 
-    acceptable_range = 0.7
+    acceptable_range = 0.5
     key_to_find = f"Dictionary for target temp: {target_temp}"
 
     # unique_keys = [key for key in stored_dictionary.keys() if key.startswith("Dictionary for target temp")]
