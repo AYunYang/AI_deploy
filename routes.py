@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from concurrent.futures import ThreadPoolExecutor
 from get_result.get_w512 import get_w512
-import uvicorn
 from getBestSettings.w512_getBestSettings import execute_w512_getBestSettings
 from mongodb_data import fetch_data
 from test_algorithms.GBFS import execute_GBFS
 from test_algorithms.Astar import execute_Astar
 from test_algorithms.backtracking import execute_backtracking
+from test_algorithms.k_means import execute_kmeans
+from getBestSettings.k_means_result import get_kmeans_result
 app = FastAPI()
 
 # Create a ThreadPoolExecutor for running background tasks
@@ -34,6 +35,10 @@ def execute_training(site: str , algorithm: str):
             result = execute_backtracking()
             print("backtracking Training completed")
 
+        elif algorithm.lower() == 'kmeans':
+            result = execute_kmeans()
+            print("k-means Training completed")
+
         elif algorithm.lower() == 'all':
 
             execute_backtracking()
@@ -44,6 +49,9 @@ def execute_training(site: str , algorithm: str):
 
             execute_GBFS()
             print("GBFS Training completed")
+
+            execute_kmeans()
+            print("k-means Training completed")
 
             result = "ALL TRAINED"
             
@@ -86,3 +94,11 @@ def run_getBestSettings(site: str, temperature: float):
         return result
     else:
         return {"message": "Site does not exist"}
+    
+@app.get("/{site}/kmeans")
+def run_get_result(site: str,temp: float,humid: float,outdoortemp: float,outdoorhumid: float,co2: float):
+    if site.lower() == 'w512':
+        result = get_kmeans_result(temp,humid,outdoortemp,outdoorhumid,co2)
+        return result
+    else:
+        return {"message": "Site not found"}
