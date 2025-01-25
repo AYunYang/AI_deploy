@@ -180,6 +180,8 @@ def execute_backtracking():
     final_data['power_consumption'] = merged_data['Total_Power']
     final_data['energy_consumption'] = merged_data['Total_Energy']
 
+    final_data["weather_status"] = merged_data["weather_status"]
+
     for unit, columns in aircon_units_cols.items():
         for column in columns:
             if 'set_point' in column:
@@ -249,7 +251,7 @@ def execute_backtracking():
 
             if timetaken < 600 or timetaken > 4200:
                 break
-            if energyconsum <= 0:
+            if round(energyconsum,1) <= 0:
                 break 
 
             rows.append(i + 1)
@@ -269,6 +271,7 @@ def execute_backtracking():
                 'future_humi': [future_humi],
                 'current_temp': [curr_temperature],
                 'current_humi': [curr_humidity],
+                'weather_status':[final_data["weather_status"].iloc[i]]
             })
         for col in Aircon_Normalize_Data.columns:
             temp_df[col] = final_data[col].iloc[i]
@@ -334,8 +337,12 @@ def execute_backtracking():
     print("Finished 2")
             
 
+    aircon_status_result = aircon_status_result[
+        (aircon_status_result['weather_status'] != 'Rain') & 
+        (aircon_status_result['weather_status'] != 'Thunderstorm')
+    ]
+    print("weather")
 
-    
     aircon_status_result = aircon_status_result.sort_values(by=['current_temp'], ascending=False) 
     aircon_status_result.to_csv('saved_data/aircon_status_W512_backtracking.csv', index=False)
     # aircon_status_result.info()

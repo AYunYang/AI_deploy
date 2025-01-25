@@ -183,7 +183,7 @@ def execute_GBFS():
 
     final_data['power_consumption'] = merged_data['Total_Power']
     final_data['energy_consumption'] = merged_data['Total_Energy']
-
+    final_data["weather_status"] = merged_data["weather_status"]
     for unit, columns in aircon_units_cols.items():
         for column in columns:
             if 'set_point' in column:
@@ -248,7 +248,7 @@ def execute_GBFS():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i):
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp 
             energyConsumption = final_data["energy_consumption"].iloc[i + 1] - curr_energy
-            if timetaken < 600 or timetaken > 4200:
+            if timetaken < 1200 or timetaken > 4200:
                 break
             if energyConsumption <= 0:
                 break
@@ -269,6 +269,7 @@ def execute_GBFS():
                 'future_humi': [future_humi],
                 'current_temp': [curr_temperature],
                 'current_humi': [curr_humidity],
+                'weather_status':[final_data["weather_status"].iloc[i]]
             })
         for col in Aircon_Normalize_Data.columns:
             temp_df[col] = final_data[col].iloc[i]
@@ -300,7 +301,7 @@ def execute_GBFS():
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
 
-            if timetaken < 600 or timetaken > 4200:
+            if timetaken < 1200 or timetaken > 4200:
                 break
             if energyconsum <= 0:
                 break
@@ -330,7 +331,12 @@ def execute_GBFS():
             
         aircon_status_getBestSettings_result = pd.concat([aircon_status_getBestSettings_result, temp_df], ignore_index=False)
     print("Finished 2")
-            
+
+    # aircon_status_result = aircon_status_result[
+    #     (aircon_status_result['weather_status'] != 'Rain') & 
+    #     (aircon_status_result['weather_status'] != 'Thunderstorm')
+    # ]
+    # print("weather")
             
     
     aircon_status_result = aircon_status_result.sort_values(by=['current_temp'], ascending=False)
