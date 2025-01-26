@@ -355,7 +355,7 @@ def execute_backtracking():
     target_temp_range = np.arange(20, 29.5, 0.5)
     time_factor = 0.5
     energy_factor = 0.5
-    acceptable_range = 0.5
+    acceptable_range = 0.3
     total_rows = aircon_status_result.shape[0]
     stored_dictionary = {}
 
