@@ -252,7 +252,7 @@ def execute_Astar():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i):
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp 
             energyConsumption = final_data["energy_consumption"].iloc[i + 1] - curr_energy
-            if timetaken < 1200 or timetaken > 4200:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyConsumption <= 0:
                 break
@@ -305,7 +305,7 @@ def execute_Astar():
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
 
-            if timetaken < 1200 or timetaken > 4200:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyconsum <= 0:
                 break
@@ -336,11 +336,11 @@ def execute_Astar():
         aircon_status_getBestSettings_result = pd.concat([aircon_status_getBestSettings_result, temp_df], ignore_index=False)
     print("Finished 2")
 
-    # aircon_status_result = aircon_status_result[
-    #     (aircon_status_result['weather_status'] != 'Rain') & 
-    #     (aircon_status_result['weather_status'] != 'Thunderstorm')
-    # ]
-    # print("weather")
+    aircon_status_result = aircon_status_result[
+        (aircon_status_result['weather_status'] != 'Rain') & 
+        (aircon_status_result['weather_status'] != 'Thunderstorm')
+    ]
+    print("weather")
 
     aircon_status_result = aircon_status_result.sort_values(by=['current_temp'], ascending=False)
     aircon_status_result.to_csv('saved_data/aircon_status_W512_AStar.csv', index=False)
@@ -352,7 +352,7 @@ def execute_Astar():
     target_temp_range = np.arange(20, 29.5, 0.5)
     time_factor = 0.5
     energy_factor = 0.5
-    acceptable_range = 0.5
+    acceptable_range = 0.3
     total_rows = aircon_status_result.shape[0]
     stored_dictionary = {}
 

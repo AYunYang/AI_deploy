@@ -248,7 +248,7 @@ def execute_GBFS():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i):
             timetaken = final_data["timestamp"].iloc[i + 1] - curr_timestamp 
             energyConsumption = final_data["energy_consumption"].iloc[i + 1] - curr_energy
-            if timetaken < 1200 or timetaken > 4200:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyConsumption <= 0:
                 break
@@ -301,7 +301,7 @@ def execute_GBFS():
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
 
-            if timetaken < 1200 or timetaken > 4200:
+            if timetaken < 600 or timetaken > 4200:
                 break
             if energyconsum <= 0:
                 break
@@ -332,11 +332,11 @@ def execute_GBFS():
         aircon_status_getBestSettings_result = pd.concat([aircon_status_getBestSettings_result, temp_df], ignore_index=False)
     print("Finished 2")
 
-    # aircon_status_result = aircon_status_result[
-    #     (aircon_status_result['weather_status'] != 'Rain') & 
-    #     (aircon_status_result['weather_status'] != 'Thunderstorm')
-    # ]
-    # print("weather")
+    aircon_status_result = aircon_status_result[
+        (aircon_status_result['weather_status'] != 'Rain') & 
+        (aircon_status_result['weather_status'] != 'Thunderstorm')
+    ]
+    print("weather")
             
     
     aircon_status_result = aircon_status_result.sort_values(by=['current_temp'], ascending=False)
