@@ -57,7 +57,7 @@ def execute_w512_getBestSettings(temp):
 
         # Sort by most time maintained (descending) and least energy consumption (ascending)
         best_entries = filtered_data.sort_values(
-            by=[ "energy_efficiency", "total_energy_consumption","total_time_maintained"], ascending=[False,False, True]
+            by=["total_energy_consumption","total_time_maintained"], ascending=[True,False]
         ).iloc[0]
 
         formatted_results = [
