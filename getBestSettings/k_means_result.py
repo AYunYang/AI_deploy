@@ -28,9 +28,9 @@ def get_kmeans_result(temp,humid,outdoortemp,outdoorhumid,co2):
     df['cluster'] = kmeans.fit_predict(X_scaled)
 
     # Assume we have a new input
-    new_input = np.array([temp, humid, outdoortemp, outdoorhumid, co2])  # Complete the missing features
+    new_input_df = pd.DataFrame([[temp, humid, outdoortemp, outdoorhumid, co2]], columns=features)
     centroids = kmeans.cluster_centers_
-    new_input_scaled = scaler.transform([new_input])
+    new_input_scaled = scaler.transform(new_input_df)
     distances = pairwise_distances_argmin_min(new_input_scaled, centroids)
 
     # distances[0] is the index of the closest cluster

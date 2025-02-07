@@ -326,7 +326,7 @@ def execute_backtracking():
                 'current_humi': [curr_humidity],
                 'total_time_maintained':total_time_maintained,
                 'total_energy_consumption': total_energy_consumption,
-                'energy_efficiency': total_time_maintained / total_energy_consumption
+                'energy_efficiency': total_time_maintained / total_energy_consumption # This value is not going to be used later in getBestSettings
             })
         for col in Aircon_Normalize_Data.columns:
             temp_df[col] = final_data[col].iloc[i]

@@ -300,7 +300,7 @@ def execute_GBFS():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i) and is_within_temperature_range(curr_temperature,final_data["temperature"].iloc[i + 1]):
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
-            if timetaken < 1800:
+            if timetaken < 1200:
                 break
             if energyconsum <= 0:
                 break
@@ -322,7 +322,7 @@ def execute_GBFS():
                 'current_humi': [curr_humidity],
                 'total_time_maintained':total_time_maintained,
                 'total_energy_consumption': total_energy_consumption,
-                'energy_efficiency': total_time_maintained / total_energy_consumption
+                'energy_efficiency': total_time_maintained / total_energy_consumption # This value is not going to be used later in getBestSettings
             })
         for col in Aircon_Normalize_Data.columns:
             temp_df[col] = final_data[col].iloc[i]

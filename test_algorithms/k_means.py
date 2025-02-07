@@ -297,6 +297,12 @@ def execute_kmeans():
             return True
         else:
             return False
+        
+    def is_within_temperature_range(current_temp, next_temp):
+        range_factor = 0.3
+        if current_temp - range_factor <= next_temp <= current_temp + range_factor:
+            return True
+        return False
 
 
     # Reset index after filtering
@@ -322,7 +328,7 @@ def execute_kmeans():
 
         curr_co2 = final_data["co2"].iloc[i]
         
-        if is_same_settings(final_data, i , i + 1):   
+        if is_same_settings(final_data, i , i + 1)and is_within_temperature_range(curr_temperature,final_data["temperature"].iloc[i + 1]):   
             diff = next_energy - curr_energy
         else:
             continue
@@ -339,6 +345,6 @@ def execute_kmeans():
             temp_df[col] = final_data[col].iloc[i]
         
         aircon_status_result = pd.concat([aircon_status_result, temp_df], ignore_index=True)
-    aircon_status_result = aircon_status_result[(aircon_status_result["energy_consumption"] > 0 ) & (aircon_status_result["energy_consumption"] < 50)]
+    aircon_status_result = aircon_status_result[(aircon_status_result["energy_consumption"] > 0.5 ) & (aircon_status_result["energy_consumption"] < 50)]
     aircon_status_result.to_csv("saved_data/k_means_clusters.csv")
     

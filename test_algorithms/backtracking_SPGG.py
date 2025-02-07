@@ -336,7 +336,7 @@ def execute_backtracking_spgg():
                 'current_humi': [curr_humidity],
                 'total_time_maintained':total_time_maintained,
                 'total_energy_consumption': total_energy_consumption,
-                'energy_efficiency': total_time_maintained / total_energy_consumption,
+                'energy_efficiency': total_time_maintained / total_energy_consumption,# This value is not going to be used later in getBestSettings
                 'door_status':[curr_door_status]
             })
         for col in Aircon_Normalize_Data.columns:
