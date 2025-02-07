@@ -219,7 +219,7 @@ def execute_GBFS():
         return check_for_off
     
     def is_within_temperature_range(current_temp, next_temp):
-        range_factor = 0.5
+        range_factor = 0.3
         if current_temp - range_factor <= next_temp <= current_temp + range_factor:
             return True
         return False
@@ -300,8 +300,7 @@ def execute_GBFS():
         while i < total_final_rows - 1 and is_same_settings(final_data, i + 1, i) and is_within_temperature_range(curr_temperature,final_data["temperature"].iloc[i + 1]):
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
-
-            if timetaken < 600 or timetaken > 4200:
+            if timetaken < 1800:
                 break
             if energyconsum <= 0:
                 break

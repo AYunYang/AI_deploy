@@ -222,7 +222,7 @@ def execute_backtracking_spgg():
         return check_for_off
     
     def is_within_temperature_range(current_temp, next_temp):
-        range_factor = 0.5
+        range_factor = 0.3
         if current_temp - range_factor <= next_temp <= current_temp + range_factor:
             return True
         return False
@@ -314,7 +314,7 @@ def execute_backtracking_spgg():
             timetaken =  final_data["timestamp"].iloc[i + 1] - curr_timestamp
             energyconsum = final_data["energy_consumption"].iloc[i + 1] - curr_energy 
 
-            if timetaken < 600 or timetaken > 4200:
+            if timetaken < 1200:
                 break
             if energyconsum <= 0:
                 break
